@@ -3,6 +3,7 @@ package com.melissayu.cp.mynytimes;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static com.melissayu.cp.mynytimes.R.id.ivImage;
 import static com.melissayu.cp.mynytimes.R.id.tvTitle;
 
 /**
@@ -45,7 +47,7 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
             LayoutInflater layoutInflater = LayoutInflater.from(getContext());
             convertView = layoutInflater.inflate(R.layout.item_article_result, parent, false);
 
-            viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivImage);
+            viewHolder.ivImage = (ImageView) convertView.findViewById(ivImage);
             viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
 
             convertView.setTag(viewHolder);
@@ -62,6 +64,9 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
             Picasso.with(getContext()).load(thumbnail).fit().centerCrop().into(viewHolder.ivImage);
 
 //            Toast.makeText(getContext(), thumbnail, Toast.LENGTH_LONG).show();
+        } else {
+            viewHolder.ivImage.setImageResource(R.drawable.sticker_white);
+            viewHolder.ivImage.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorImageBackground));
         }
 
         return convertView;
