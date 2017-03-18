@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="50dp">
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/tvSortBy"
@@ -19,9 +19,9 @@
         android:id="@+id/sort_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/sort_array"
         android:layout_toEndOf="@+id/tvSortBy"
-        android:layout_toRightOf="@+id/tvSortBy" />
+        android:layout_toRightOf="@+id/tvSortBy"
+        android:entries="@array/sort_array" />
 
     <TextView
         android:id="@+id/tvBeginDate"
@@ -35,15 +35,12 @@
 
     <DatePicker
         android:id="@+id/dialogDatePicker"
-        android:layout_width="wrap_content"
+        android:layout_width="600dp"
         android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="false"
         android:layout_below="@+id/tvBeginDate"
         android:calendarViewShown="false"
-        android:datePickerMode="spinner"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:datePickerMode="spinner" />
 
     <TextView
         android:id="@+id/tvNewsDesk"
@@ -55,17 +52,22 @@
         android:text="News Desk"
         android:textSize="18dp" />
 
-    <CheckBox android:id="@+id/checkbox_arts"
+    <CheckBox
+        android:id="@+id/checkbox_arts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvNewsDesk"
         android:text="Arts" />
-    <CheckBox android:id="@+id/checkbox_fashion"
+
+    <CheckBox
+        android:id="@+id/checkbox_fashion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkbox_arts"
         android:text="Fashion &amp; Style" />
-    <CheckBox android:id="@+id/checkbox_sports"
+
+    <CheckBox
+        android:id="@+id/checkbox_sports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkbox_fashion"

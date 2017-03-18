@@ -13,13 +13,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.melissayu.cp.mynytimes.Article;
 import com.melissayu.cp.mynytimes.ArticleArrayAdapter;
+import com.melissayu.cp.mynytimes.EndlessScrollListener;
 import com.melissayu.cp.mynytimes.FilterFragment;
 import com.melissayu.cp.mynytimes.FilterFragment.FilterDialogListener;
 import com.melissayu.cp.mynytimes.R;
@@ -41,6 +41,8 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
     String beginDate;
     String newsDesk;
 
+    EndlessScrollListener esListener;
+    int currentPage;
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
@@ -73,6 +75,30 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
                 startActivity(i);
             }
         });
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getArticles(gvResults, true);
+            }
+        });
+
+        esListener = new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+//                loadNextDataFromApi(page);
+//                Toast.makeText(getApplicationContext(), "Load more items!", Toast.LENGTH_SHORT).show();
+                getArticles(gvResults, false);
+
+                // or loadNextDataFromApi(totalItemsCount);
+                return true; // ONLY if more data is actually being loaded; false otherwise.
+            }
+        };
+
+        gvResults.setOnScrollListener(esListener);
+
     }
 
     @Override
@@ -107,13 +133,19 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
 
     @Override
     public void onFinishFilterDialog(String sortByVal, String beginDateVal, String newsDeskVal) {
-        Toast.makeText(this, "Hi, " + sortByVal, Toast.LENGTH_SHORT).show();
         sortBy = sortByVal;
         beginDate = beginDateVal;
         newsDesk = newsDeskVal;
     }
 
-    public void onArticleSearch(View view) {
+    public void getArticles(View view, Boolean newSearch) {
+        if (newSearch) {
+            currentPage = 0;
+            articles.clear();
+            adapter.notifyDataSetChanged(); // or notifyItemRangeRemoved
+            esListener.resetState();
+        }
+
         String query = etQuery.getText().toString();
 
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
@@ -121,7 +153,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
         RequestParams requestParams = new RequestParams();
         requestParams.put("api-key", "28580fe0e09141ceaa0f57d3ab5eb653");
         requestParams.put("q", query);
-        requestParams.put("page", 0);
+        requestParams.put("page", currentPage);
 
         if (sortBy != null) {
             requestParams.put("sort", sortBy.toLowerCase());
@@ -146,6 +178,8 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
 
                     adapter.addAll(Article.fromJSONArray(articleJSONResults));
                     Log.d("DEBUG", articles.toString());
+
+                    currentPage++;
                 } catch (Exception e) {
 
                 }

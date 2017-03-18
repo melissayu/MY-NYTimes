@@ -189,15 +189,19 @@ public class FilterFragment extends DialogFragment implements TextView.OnEditorA
 
     public void parseNewsDeskValue () {
         if (newsDesk != null) {
-            if (newsDesk.contains("Arts")) {
-                checkArts = true;
-            }
-            if (newsDesk.contains("Fashion & Style")) {
-                checkFashion = true;
-            }
-            if (newsDesk.contains("Sports")) {
-                checkSports = true;
-            }
+
+            checkArts = newsDesk.contains("Arts") ? true : false;
+            checkFashion = newsDesk.contains("Fashion & Style") ? true : false;
+            checkSports = newsDesk.contains("Sports") ? true : false;
+//            if (newsDesk.contains("Arts")) {
+//                checkArts = true;
+//            }
+//            if (newsDesk.contains("Fashion & Style")) {
+//                checkFashion = true;
+//            }
+//            if (newsDesk.contains("Sports")) {
+//                checkSports = true;
+//            }
         }
     }
 
@@ -226,6 +230,8 @@ public class FilterFragment extends DialogFragment implements TextView.OnEditorA
 
             newsDeskString += ")";
             newsDesk = newsDeskString;
+        } else {
+            newsDesk = null;
         }
     }
 
