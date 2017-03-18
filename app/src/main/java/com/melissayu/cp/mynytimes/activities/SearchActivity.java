@@ -1,18 +1,23 @@
 package com.melissayu.cp.mynytimes.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -33,11 +38,11 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity implements FilterDialogListener {
 
-    EditText etQuery;
     GridView gvResults;
-    Button btnSearch;
+//    Button btnSearch;
+    TextView tvNetworkUnavailable;
 
-    String sortBy;
+    String sortBy="Newest"; // Newest by default
     String beginDate;
     String newsDesk;
 
@@ -47,6 +52,8 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
 
+    String query;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +62,12 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
         setSupportActionBar(toolbar);
 
         setupViews();
+        getArticles(true);
     }
 
     public void setupViews() {
-        etQuery = (EditText) findViewById(R.id.etQuery);
+        tvNetworkUnavailable = (TextView) findViewById(R.id.tvNetworkUnavailable);
         gvResults = (GridView) findViewById(R.id.gvResults);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
         articles = new ArrayList<>();
         adapter = new ArticleArrayAdapter(this, articles);
         gvResults.setAdapter(adapter);
@@ -76,12 +83,12 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
             }
         });
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getArticles(gvResults, true);
-            }
-        });
+//        btnSearch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getArticles(true);
+//            }
+//        });
 
         esListener = new EndlessScrollListener() {
             @Override
@@ -90,7 +97,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
                 // Add whatever code is needed to append new items to your AdapterView
 //                loadNextDataFromApi(page);
 //                Toast.makeText(getApplicationContext(), "Load more items!", Toast.LENGTH_SHORT).show();
-                getArticles(gvResults, false);
+                getArticles(false);
 
                 // or loadNextDataFromApi(totalItemsCount);
                 return true; // ONLY if more data is actually being loaded; false otherwise.
@@ -99,13 +106,49 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
 
         gvResults.setOnScrollListener(esListener);
 
+        if (!isNetworkAvailable()) {
+//            Toast.makeText(this, "No Network Available", Toast.LENGTH_LONG).show();
+            tvNetworkUnavailable.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-        return true;
+//        getMenuInflater().inflate(R.menu.menu_search, menu);
+//        return true;
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_search, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String queryStr) {
+                // perform query here
+                query = queryStr;
+                getArticles(true);
+
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (searchView.getQuery().length() == 0) {
+                    getArticles(true);
+                }
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+
+
     }
 
     @Override
@@ -138,7 +181,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
         newsDesk = newsDeskVal;
     }
 
-    public void getArticles(View view, Boolean newSearch) {
+    public void getArticles( Boolean newSearch) {
         if (newSearch) {
             currentPage = 0;
             articles.clear();
@@ -146,14 +189,17 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
             esListener.resetState();
         }
 
-        String query = etQuery.getText().toString();
+//        String query = etQuery.getText().toString();
 
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-        String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-        RequestParams requestParams = new RequestParams();
+        final String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+        final RequestParams requestParams = new RequestParams();
         requestParams.put("api-key", "28580fe0e09141ceaa0f57d3ab5eb653");
-        requestParams.put("q", query);
         requestParams.put("page", currentPage);
+
+        if (query != null && query != "") {
+            requestParams.put("q", query);
+        }
 
         if (sortBy != null) {
             requestParams.put("sort", sortBy.toLowerCase());
@@ -166,6 +212,14 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
         }
 
         asyncHttpClient.get(url, requestParams, new JsonHttpResponseHandler(){
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DEBUG", "!!! onFailure:"+url);
+                Log.d("DEBUG", "!!! onFailure:"+requestParams.toString());
+                Log.d("DEBUG", errorResponse.toString());
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", response.toString());
@@ -186,5 +240,13 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
             }
         });
     }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
 
 }

@@ -3,34 +3,42 @@
     android:id="@+id/filter_modal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:layout_alignParentTop="false"
+    android:clipToPadding="false"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvSortBy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
         android:text="Sort By"
+        android:textColor="@color/colorMyPrimary"
         android:textSize="18dp" />
 
     <Spinner
         android:id="@+id/sort_spinner"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/tvSortBy"
-        android:layout_toRightOf="@+id/tvSortBy"
+        android:layout_below="@+id/tvSortBy"
+        android:layout_centerHorizontal="true"
         android:entries="@array/sort_array" />
 
     <TextView
         android:id="@+id/tvBeginDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
         android:layout_below="@+id/sort_spinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:text="Begin Date"
+        android:textColor="@color/colorMyPrimary"
         android:textSize="18dp" />
 
     <DatePicker
@@ -39,46 +47,64 @@
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="false"
         android:layout_below="@+id/tvBeginDate"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-50dp"
+        android:layout_marginLeft="-50dp"
+        android:layout_marginRight="-50dp"
+        android:layout_marginTop="-50dp"
         android:calendarViewShown="false"
-        android:datePickerMode="spinner" />
+        android:clipToPadding="false"
+        android:datePickerMode="spinner"
+        android:scaleX="0.60"
+        android:scaleY="0.60" />
+
 
     <TextView
         android:id="@+id/tvNewsDesk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
         android:layout_below="@+id/dialogDatePicker"
-        android:text="News Desk"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="News Desk Values"
+        android:textColor="@color/colorMyPrimary"
         android:textSize="18dp" />
 
     <CheckBox
         android:id="@+id/checkbox_arts"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvNewsDesk"
+        android:layout_centerHorizontal="true"
         android:text="Arts" />
 
     <CheckBox
         android:id="@+id/checkbox_fashion"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkbox_arts"
+        android:layout_centerHorizontal="true"
         android:text="Fashion &amp; Style" />
 
     <CheckBox
         android:id="@+id/checkbox_sports"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkbox_fashion"
+        android:layout_centerHorizontal="true"
         android:text="Sports" />
 
     <Button
         android:id="@+id/btn_filter"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkbox_sports"
         android:layout_centerHorizontal="true"
-        android:text="Filter" />
+        android:layout_marginTop="10dp"
+        android:background="@color/colorMyPrimary"
+        android:text="Save Filters"
+        android:textColor="@android:color/background_light" />
 
 </RelativeLayout>

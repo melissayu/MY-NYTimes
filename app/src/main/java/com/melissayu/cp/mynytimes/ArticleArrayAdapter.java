@@ -61,7 +61,7 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
         String thumbnail = article.getThumbnail();
         if (!TextUtils.isEmpty(thumbnail)) {
 //            Picasso.with(getContext()).load("https://i.imgur.com/tGbaZCY.jpg").fit().centerCrop().into(viewHolder.ivImage);
-            Picasso.with(getContext()).load(thumbnail).fit().centerCrop().into(viewHolder.ivImage);
+            Picasso.with(getContext()).load(thumbnail).fit().centerCrop().placeholder(R.drawable.loading_animation).into(viewHolder.ivImage);
 
 //            Toast.makeText(getContext(), thumbnail, Toast.LENGTH_LONG).show();
         } else {

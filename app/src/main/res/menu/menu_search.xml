@@ -2,10 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.melissayu.cp.mynytimes.activities.SearchActivity">
+
+    <item android:id="@+id/action_search"
+        android:orderInCategory="5"
+        android:title="Search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+
     <item
         android:id="@+id/miFilter"
         android:icon="@drawable/filter_icon"
-        app:showAsAction="ifRoom"
-        android:title="Filter">
-    </item>
+        android:orderInCategory="6"
+        android:title="Filter"
+        app:showAsAction="always"></item>
 </menu>
