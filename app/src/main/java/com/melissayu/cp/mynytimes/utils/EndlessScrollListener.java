@@ -1,4 +1,4 @@
-package com.melissayu.cp.mynytimes;
+package com.melissayu.cp.mynytimes.utils;
 
 import android.widget.AbsListView;
 

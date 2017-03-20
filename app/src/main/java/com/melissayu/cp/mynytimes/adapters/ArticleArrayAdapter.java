@@ -1,4 +1,4 @@
-package com.melissayu.cp.mynytimes;
+package com.melissayu.cp.mynytimes.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.melissayu.cp.mynytimes.models.Article;
+import com.melissayu.cp.mynytimes.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

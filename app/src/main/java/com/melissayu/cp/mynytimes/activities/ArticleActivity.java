@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.melissayu.cp.mynytimes.Article;
+import com.melissayu.cp.mynytimes.models.Article;
 import com.melissayu.cp.mynytimes.R;
 
 public class ArticleActivity extends AppCompatActivity {
@@ -27,7 +27,6 @@ public class ArticleActivity extends AppCompatActivity {
 
         Article article = (Article) getIntent().getParcelableExtra("article");
 
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(article.getHeadline());
 
         WebView wv = (WebView) findViewById(R.id.wvArticle);
@@ -36,7 +35,6 @@ public class ArticleActivity extends AppCompatActivity {
             @SuppressWarnings("deprecation")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                return super.shouldOverrideUrlLoading(view, request);
                 view.loadUrl(url);
                 return true;
             }
@@ -47,8 +45,6 @@ public class ArticleActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_article, menu);
-//        return true;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_article, menu);
 

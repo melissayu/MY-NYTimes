@@ -8,26 +8,28 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.melissayu.cp.mynytimes.Article;
-import com.melissayu.cp.mynytimes.ArticleArrayAdapter;
-import com.melissayu.cp.mynytimes.EndlessScrollListener;
-import com.melissayu.cp.mynytimes.FilterFragment;
-import com.melissayu.cp.mynytimes.FilterFragment.FilterDialogListener;
 import com.melissayu.cp.mynytimes.R;
+import com.melissayu.cp.mynytimes.adapters.ArticleRVAdapter;
+import com.melissayu.cp.mynytimes.fragments.FilterFragment;
+import com.melissayu.cp.mynytimes.fragments.FilterFragment.FilterDialogListener;
+import com.melissayu.cp.mynytimes.models.Article;
+import com.melissayu.cp.mynytimes.utils.EndlessRecyclerViewScrollListener;
+import com.melissayu.cp.mynytimes.utils.ItemClickSupport;
+import com.melissayu.cp.mynytimes.utils.SpacesItemDecoration;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,19 +40,21 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity implements FilterDialogListener {
 
-    GridView gvResults;
-//    Button btnSearch;
+//    GridView gvResults;
+    RecyclerView gvResults;
     TextView tvNetworkUnavailable;
+    StaggeredGridLayoutManager gridLayoutManager;
+    SearchView searchView;
 
     String sortBy="Newest"; // Newest by default
-    String beginDate;
+    String beginDate="20000101"; //01-01-200 be default
     String newsDesk;
 
-    EndlessScrollListener esListener;
+    private EndlessRecyclerViewScrollListener ervsListener;
     int currentPage;
 
     ArrayList<Article> articles;
-    ArticleArrayAdapter adapter;
+    ArticleRVAdapter adapter;
 
     String query;
 
@@ -67,47 +71,37 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
 
     public void setupViews() {
         tvNetworkUnavailable = (TextView) findViewById(R.id.tvNetworkUnavailable);
-        gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults = (RecyclerView) findViewById(R.id.gvResults);
         articles = new ArrayList<>();
-        adapter = new ArticleArrayAdapter(this, articles);
+        adapter = new ArticleRVAdapter(this, articles);
         gvResults.setAdapter(adapter);
 
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ItemClickSupport.addTo(gvResults).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
+                        Article article = articles.get(position);
+                        i.putExtra("article", article);
+                        startActivity(i);
+                    }
+                }
+        );
 
-                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                Article article = articles.get(position);
-                i.putExtra("article", article);
-                startActivity(i);
-            }
-        });
+        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        gvResults.setLayoutManager(gridLayoutManager);
+        SpacesItemDecoration decoration = new SpacesItemDecoration(30);
+        gvResults.addItemDecoration(decoration);
 
-//        btnSearch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                getArticles(true);
-//            }
-//        });
-
-        esListener = new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
-//                loadNextDataFromApi(page);
-//                Toast.makeText(getApplicationContext(), "Load more items!", Toast.LENGTH_SHORT).show();
-                getArticles(false);
-
-                // or loadNextDataFromApi(totalItemsCount);
-                return true; // ONLY if more data is actually being loaded; false otherwise.
-            }
-        };
-
-        gvResults.setOnScrollListener(esListener);
+        ervsListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                        getArticles(false);
+                    }
+                };
+        gvResults.addOnScrollListener(ervsListener);
 
         if (!isNetworkAvailable()) {
-//            Toast.makeText(this, "No Network Available", Toast.LENGTH_LONG).show();
             tvNetworkUnavailable.setVisibility(View.VISIBLE);
         }
 
@@ -115,15 +109,12 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_search, menu);
-//        return true;
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
 
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String queryStr) {
@@ -140,9 +131,10 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (searchView.getQuery().length() == 0) {
-                    getArticles(true);
-                }
+//                if (newText.equals("")){
+//                    getArticles(true);
+//                }
+
                 return false;
             }
         });
@@ -156,15 +148,25 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-
         switch (item.getItemId()) {
             case R.id.miFilter:
                 filterClicked();
                 return true;
+            case R.id.miFrontPage:
+                frontPageClicked();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void frontPageClicked() {
+        searchView.setQuery("", true);
+        sortBy = "Newest";
+        newsDesk = null;
+        beginDate="20000101";
+        query = "";
+        getArticles(true);
     }
 
     public void filterClicked() {
@@ -186,10 +188,9 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
             currentPage = 0;
             articles.clear();
             adapter.notifyDataSetChanged(); // or notifyItemRangeRemoved
-            esListener.resetState();
-        }
+            ervsListener.resetState();
 
-//        String query = etQuery.getText().toString();
+        }
 
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
         final String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
@@ -214,8 +215,8 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
         asyncHttpClient.get(url, requestParams, new JsonHttpResponseHandler(){
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("DEBUG", "!!! onFailure:"+url);
-                Log.d("DEBUG", "!!! onFailure:"+requestParams.toString());
+                Log.d("DEBUG", "onFailure:"+url);
+                Log.d("DEBUG", "onFailure:"+requestParams.toString());
                 Log.d("DEBUG", errorResponse.toString());
 //                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
@@ -230,9 +231,9 @@ public class SearchActivity extends AppCompatActivity implements FilterDialogLis
                     articleJSONResults = response.getJSONObject("response").getJSONArray("docs");
                     Log.d("DEBUG", articleJSONResults.toString());
 
-                    adapter.addAll(Article.fromJSONArray(articleJSONResults));
+                    articles.addAll(Article.fromJSONArray(articleJSONResults));
                     Log.d("DEBUG", articles.toString());
-
+                    adapter.notifyDataSetChanged();
                     currentPage++;
                 } catch (Exception e) {
 

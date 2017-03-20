@@ -4,16 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorButtonNormal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.melissayu.cp.mynytimes.activities.SearchActivity"
     tools:showIn="@layout/activity_search">
 
-    <GridView
+    <!--<GridView
         android:id="@+id/gvResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:numColumns="4" />
+        android:numColumns="4" />-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/gvResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
     <TextView
         android:id="@+id/tvNetworkUnavailable"

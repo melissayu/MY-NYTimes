@@ -10,10 +10,16 @@
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView" />
 
+    <item android:id="@+id/miFrontPage"
+        android:orderInCategory="6"
+        android:title="Front Page"
+        android:icon="@drawable/newspaper"
+        app:showAsAction="always|collapseActionView" />
+
     <item
         android:id="@+id/miFilter"
-        android:icon="@drawable/filter_icon"
-        android:orderInCategory="6"
+        android:icon="@drawable/ic_filter_list"
+        android:orderInCategory="10"
         android:title="Filter"
         app:showAsAction="always"></item>
 </menu>

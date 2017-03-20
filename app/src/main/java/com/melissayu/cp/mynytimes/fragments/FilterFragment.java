@@ -1,4 +1,4 @@
-package com.melissayu.cp.mynytimes;
+package com.melissayu.cp.mynytimes.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+
+import com.melissayu.cp.mynytimes.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -184,26 +186,17 @@ public class FilterFragment extends DialogFragment implements TextView.OnEditorA
         cbFashion.setChecked(checkFashion);
         cbSports.setChecked(checkSports);
 
-//        boolean isChecked = checkCheese.isChecked();
-//        checkCheese.setChecked(true);
-
     }
 
     public void parseNewsDeskValue () {
         if (newsDesk != null) {
-
             checkArts = newsDesk.contains("Arts") ? true : false;
             checkFashion = newsDesk.contains("Fashion & Style") ? true : false;
             checkSports = newsDesk.contains("Sports") ? true : false;
-//            if (newsDesk.contains("Arts")) {
-//                checkArts = true;
-//            }
-//            if (newsDesk.contains("Fashion & Style")) {
-//                checkFashion = true;
-//            }
-//            if (newsDesk.contains("Sports")) {
-//                checkSports = true;
-//            }
+        } else {
+            checkArts = false;
+            checkFashion = false;
+            checkSports = false;
         }
     }
 

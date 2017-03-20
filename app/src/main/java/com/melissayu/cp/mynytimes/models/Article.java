@@ -1,4 +1,4 @@
-package com.melissayu.cp.mynytimes;
+package com.melissayu.cp.mynytimes.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,11 +17,15 @@ public class Article implements Parcelable{
     String webUrl;
     String headline;
     String thumbnail;
+    String snippet;
+    String newsDesk;
 
     protected Article(Parcel in) {
         webUrl = in.readString();
         headline = in.readString();
         thumbnail = in.readString();
+        snippet = in.readString();
+        newsDesk = in.readString();
     }
 
     @Override
@@ -29,6 +33,8 @@ public class Article implements Parcelable{
         dest.writeString(webUrl);
         dest.writeString(headline);
         dest.writeString(thumbnail);
+        dest.writeString(snippet);
+        dest.writeString(newsDesk);
     }
 
     @Override
@@ -60,12 +66,21 @@ public class Article implements Parcelable{
         return thumbnail;
     }
 
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public String getNewsDesk() {
+        return newsDesk;
+    }
+
 
     public Article(JSONObject jsonObject) {
         try {
             this.webUrl = jsonObject.getString("web_url");
             this.headline = jsonObject.getJSONObject("headline").getString("main");
-
+            this.snippet = jsonObject.getString("snippet");
+            this.newsDesk = jsonObject.getString("news_desk");
             JSONArray multimedia = jsonObject.getJSONArray("multimedia");
             if (multimedia.length() > 0) {
                 JSONObject multimediaObject = multimedia.getJSONObject(0);
