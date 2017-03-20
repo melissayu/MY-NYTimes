@@ -47,8 +47,8 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
+Gif: https://i2.wp.com/baytrotter.files.wordpress.com/2017/03/2017_03_19_19_35_29.gif
+Video: http://sendvid.com/xoptha9n?secret=89566e5c-2373-48b9-a4c6-b2f936cb0442
 
 ## Notes
 
