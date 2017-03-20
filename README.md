@@ -47,7 +47,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-Gif: https://i2.wp.com/baytrotter.files.wordpress.com/2017/03/2017_03_19_19_35_29.gif
+Gif: http://i.imgur.com/YaxhdLd.gifv
 Video: http://sendvid.com/xoptha9n?secret=89566e5c-2373-48b9-a4c6-b2f936cb0442
 
 ## Notes
